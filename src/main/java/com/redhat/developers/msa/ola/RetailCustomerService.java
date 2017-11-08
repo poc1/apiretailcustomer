@@ -1,15 +1,20 @@
 package com.redhat.developers.msa.ola;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.ListIterator;
+
 
 import org.springframework.stereotype.Service;
-
 import com.redhat.developers.model.CustomerContactAddressesDetail;
 import com.redhat.developers.model.CustomerContactMediaDetail;
 import com.redhat.developers.model.CustomerContactPhoneDetail;
 import com.redhat.developers.model.CustomerDataRetail;
 import com.redhat.developers.model.CustomerDocumentDetail;
+import com.redhat.developers.pojo.BasicData;
 
 
 @Service
@@ -51,82 +56,200 @@ public class RetailCustomerService {
 	}
 	
 	
-	// get Customer Basic Data
-	public CustomerDataRetail getCustomerDataById(String customerId)
+	/**
+	 * Obtener información básica del cliente
+	 * @param customerId
+	 * @return
+	 */
+	public String getBasicData(BasicData basicData)
 	{
-		ListIterator<CustomerDataRetail> iterator =  customerDataRetailList.listIterator();
-		while(iterator.hasNext()) {
-			
-			CustomerDataRetail data = iterator.next();
-			if(data.getCustomerId().equals(customerId))
-				return data;
+		//String urlString = "http://localhost:8082/retail/" + basicData.getCustomerid();
+	      String urlString = "http://apibank3-poc1.193b.starter-ca-central-1.openshiftapps.com:80/retail/" + basicData.getCustomerid();		  
+        //String urlString = "https://webapigateway.dev.mx.corp/santander-mexico/intranet-client-dev/retail_customers/" + basicData.getCustomerid();
+		
+ 		
+		StringBuffer response = new StringBuffer();
+		
+		try {
+				  
+		  URL url = new URL(urlString);
+		  HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		 
+		  // By default it is GET request
+		  con.setRequestMethod("GET");
+		 
+		  //add request header
+		  con.setRequestProperty("Accept", "application/json");
+		  con.setRequestProperty("Accept-Language", "es-ES");
+		  con.setRequestProperty("Content-Type", "application/json");
+		  con.setRequestProperty("x-ibm-client-id", basicData.getX_ibm_client_id());
+		  con.setRequestProperty("Authorization", basicData.getAuthorization());
+		  con.setRequestProperty("x-santander-global-id", basicData.getX_santander_global_id());
+		 
+		  //int responseCode = con.getResponseCode();
+			 
+		  // Reading response from input Stream
+		  BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		  String output;
+		  		 
+		  while ((output = in.readLine()) != null) {
+		   response.append(output);
+		  }
+		  in.close();
+		  
+		}catch(IOException ex) {
+			System.out.println(ex.getMessage());
 		}
-		return new CustomerDataRetail();		
+		
+	  return response.toString();		
 	}
 	
 	
-	// get Customer Contact Address
-	public Iterable<CustomerContactAddressesDetail> getCustomerContactAddress(String customerId)
+	/**
+	 * Direcciones del cliente
+	 * @param basicData
+	 * @return
+	 */
+	public String getCustomerContactAddress(BasicData basicData)
 	{
-		ArrayList<CustomerContactAddressesDetail> it = new ArrayList<CustomerContactAddressesDetail>();
-		ListIterator<CustomerContactAddressesDetail> iterator =  customerContactAddressesDetailList.listIterator();
-		while(iterator.hasNext()) {
+		  //String urlString = "http://localhost:8082/retail/" + basicData.getCustomerid() +"/addresses";
+		    String urlString = "http://apibank3-poc1.193b.starter-ca-central-1.openshiftapps.com:80/retail/" + basicData.getCustomerid() +"/addresses";
+	      //String urlString = "https://webapigateway.dev.mx.corp/santander-mexico/intranet-client-dev/retail_customers/" + basicData.getCustomerid() +"/addresses";
+						
+			StringBuffer response = new StringBuffer();
 			
-			CustomerContactAddressesDetail data = iterator.next();
-			if(data.getCustomerId().equals(customerId)) {
-				it.add(data);
+			try {
+					  
+			  URL url = new URL(urlString);
+			  HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			 
+			  // By default it is GET request
+			  con.setRequestMethod("GET");
+			 
+			  //add request header
+			  con.setRequestProperty("Accept", "application/json");
+			  con.setRequestProperty("Accept-Language", "es-ES");
+			  con.setRequestProperty("Content-Type", "application/json");
+			  con.setRequestProperty("x-ibm-client-id", basicData.getX_ibm_client_id());
+			  con.setRequestProperty("Authorization", basicData.getAuthorization());
+			  con.setRequestProperty("x-santander-global-id", basicData.getX_santander_global_id());
+			 
+			  //int responseCode = con.getResponseCode();
+				 
+			  // Reading response from input Stream
+			  BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			  String output;
+			  		 
+			  while ((output = in.readLine()) != null) {
+			   response.append(output);
+			  }
+			  in.close();
+			  
+			}catch(IOException ex) {
+				System.out.println(ex.getMessage());
 			}
-		}
-		return it;		
-	}
-	
-	
-	// get Customer Contact Phone
-	public Iterable<CustomerContactPhoneDetail> getCustomerContactPhone(String customerId)
-	{
-		ArrayList<CustomerContactPhoneDetail> it = new ArrayList<CustomerContactPhoneDetail>();
-		ListIterator<CustomerContactPhoneDetail> iterator =  customerContactPhoneDetailList.listIterator();
-		while(iterator.hasNext()) {
 			
-			CustomerContactPhoneDetail data = iterator.next();
-			if(data.getCustomerId().equals(customerId)) {
-				it.add(data);
-			}
-		}
-		return it;		
+		  return response.toString();	
 	}
 	
 	
-	// get Customer Contact Media
-	public Iterable<CustomerContactMediaDetail> getCustomerContactMedia(String customerId)
+	/**
+	 * Telefonos del cliente
+	 * @param customerId
+	 * @return
+	 */
+	public String getCustomerContactPhone(BasicData basicData)
 	{
-		ArrayList<CustomerContactMediaDetail> it = new ArrayList<CustomerContactMediaDetail>();
-		ListIterator<CustomerContactMediaDetail> iterator =  customerContactMediaDetailList.listIterator();
-		while(iterator.hasNext()) {
-			
-			CustomerContactMediaDetail data = iterator.next();
-			if(data.getCustomerId().equals(customerId)) {
-				it.add(data);
-			}
+		//String urlString = "http://localhost:8082/retail/" + basicData.getCustomerid() +"/phone_numbers";
+	      String urlString = "http://apibank3-poc1.193b.starter-ca-central-1.openshiftapps.com:80/retail/" + basicData.getCustomerid() +"/phone_numbers";
+        //String urlString = "https://webapigateway.dev.mx.corp/santander-mexico/intranet-client-dev/retail_customers/" + basicData.getCustomerid() +"/phone_numbers";
+					
+		StringBuffer response = new StringBuffer();
+		
+		try {
+				  
+		  URL url = new URL(urlString);
+		  HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		 
+		  // By default it is GET request
+		  con.setRequestMethod("GET");
+		 
+		  //add request header
+		  con.setRequestProperty("Accept", "application/json");
+		  con.setRequestProperty("Accept-Language", "es-ES");
+		  con.setRequestProperty("Content-Type", "application/json");
+		  con.setRequestProperty("x-ibm-client-id", basicData.getX_ibm_client_id());
+		  con.setRequestProperty("Authorization", basicData.getAuthorization());
+		  con.setRequestProperty("x-santander-global-id", basicData.getX_santander_global_id());
+		 
+		  //int responseCode = con.getResponseCode();
+			 
+		  // Reading response from input Stream
+		  BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		  String output;
+		  		 
+		  while ((output = in.readLine()) != null) {
+		   response.append(output);
+		  }
+		  in.close();
+		  
+		}catch(IOException ex) {
+			System.out.println(ex.getMessage());
 		}
-		return it;		
+		
+	  return response.toString();
+	  
 	}
 	
-	// get Customer Contact Documents
-	public Iterable<CustomerDocumentDetail> getCustomerDocumentDetail(String customerId)
+	
+	/**
+	 * Medios Electrónicos del Cliente
+	 * @param customerId
+	 * @return
+	 */
+	public String getCustomerContactMedia(BasicData basicData)
 	{
-		ArrayList<CustomerDocumentDetail> it = new ArrayList<CustomerDocumentDetail>();
-		ListIterator<CustomerDocumentDetail> iterator =  customerDocumentDetailList.listIterator();
-		while(iterator.hasNext()) {
-			
-			CustomerDocumentDetail data = iterator.next();
-			if(data.getCustomerId().equals(customerId)) {
-				it.add(data);
-			}
+		//String urlString = "http://localhost:8082/retail/" + basicData.getCustomerid() +"/media_addresses";
+	      String urlString = "http://apibank3-poc1.193b.starter-ca-central-1.openshiftapps.com:80/retail/" + basicData.getCustomerid() +"/media_addresses";
+        //String urlString = "https://webapigateway.dev.mx.corp/santander-mexico/intranet-client-dev/retail_customers/" + basicData.getCustomerid() +"/media_addresses";
+		                      
+		StringBuffer response = new StringBuffer();
+		
+		try {
+				  
+		  URL url = new URL(urlString);
+		  HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		 
+		  // By default it is GET request
+		  con.setRequestMethod("GET");
+		 
+		  //add request header
+		  con.setRequestProperty("Accept", "application/json");
+		  con.setRequestProperty("Accept-Language", "es-ES");
+		  con.setRequestProperty("Content-Type", "application/json");
+		  con.setRequestProperty("x-ibm-client-id", basicData.getX_ibm_client_id());
+		  con.setRequestProperty("Authorization", basicData.getAuthorization());
+		  con.setRequestProperty("x-santander-global-id", basicData.getX_santander_global_id());
+		 
+		  //int responseCode = con.getResponseCode();
+			 
+		  // Reading response from input Stream
+		  BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		  String output;
+		  		 
+		  while ((output = in.readLine()) != null) {
+		   response.append(output);
+		  }
+		  in.close();
+		  
+		}catch(IOException ex) {
+			System.out.println(ex.getMessage());
 		}
-		return it;		
+		
+	  return response.toString();	
 	}
 	
+
 	
 	
 	
